@@ -1,33 +1,18 @@
 import { useEffect, useState } from "react";
 
-type Route = "home" | "portfolio" | "about" | "services" | "inquire";
-const routeFromPath = (): Route => { const value = window.location.pathname.split("/").filter(Boolean)[0]; return (["portfolio", "about", "services", "inquire"] as Route[]).includes(value as Route) ? value as Route : "home"; };
-const galleries = [
-  { title: "Graduation", note: "The end of one chapter, held onto forever.", image: "/images/graduate-gown.jpg" },
-  { title: "Portraits", note: "Honest portraits with room to feel like yourself.", image: "/images/portrait-field.jpg" },
-  { title: "On film", note: "Soft edges, in-between moments, and a little nostalgia.", image: "/images/film-story-1.jpg" },
-];
+type Route = "portfolio" | "about" | "services" | "inquire";
+const routeFromPath = (): Route => { const value = window.location.pathname.split("/").filter(Boolean)[0]; return (["portfolio", "about", "services", "inquire"] as Route[]).includes(value as Route) ? value as Route : "portfolio"; };
 
 function App() {
   const [route, setRoute] = useState<Route>(routeFromPath);
   useEffect(() => { const update = () => setRoute(routeFromPath()); window.addEventListener("popstate", update); return () => window.removeEventListener("popstate", update); }, []);
-  const navigate = (next: Route) => { window.history.pushState({}, "", next === "home" ? "/" : `/${next}`); setRoute(next); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  return <div className="site-shell"><Header route={route} onNavigate={navigate} /><main id="main">{route === "home" && <Home onNavigate={navigate} />}{route === "portfolio" && <Portfolio onNavigate={navigate} />}{route === "about" && <About onNavigate={navigate} />}{route === "services" && <Services onNavigate={navigate} />}{route === "inquire" && <Inquire />}</main><Footer onNavigate={navigate} /></div>;
+  const navigate = (next: Route) => { window.history.pushState({}, "", `/${next}`); setRoute(next); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  return <div className="site-shell"><Header route={route} onNavigate={navigate} /><main id="main">{route === "portfolio" && <Portfolio onNavigate={navigate} />}{route === "about" && <About onNavigate={navigate} />}{route === "services" && <Services onNavigate={navigate} />}{route === "inquire" && <Inquire />}</main><Footer onNavigate={navigate} /></div>;
 }
 
 function Header({ route, onNavigate }: { route: Route; onNavigate: (route: Route) => void }) {
-  return <header className="site-header"><button className="wordmark" onClick={() => onNavigate("home")} aria-label="Christy Ho Photography, home"><span>Christy Ho</span><small>Photography</small></button><nav aria-label="Main navigation">{(["home", "portfolio", "about", "services", "inquire"] as Route[]).map((item) => <button className={route === item ? "active" : ""} key={item} onClick={() => onNavigate(item)}>{item}</button>)}</nav></header>;
+  return <header className="site-header"><button className="wordmark" onClick={() => onNavigate("portfolio")} aria-label="Christy Ho Photography, portfolio"><span>Christy Ho</span><small>Photography</small></button><nav aria-label="Main navigation">{(["portfolio", "about", "services", "inquire"] as Route[]).map((item) => <button className={route === item ? "active" : ""} key={item} onClick={() => onNavigate(item)}>{item}</button>)}</nav></header>;
 }
-
-function Home({ onNavigate }: { onNavigate: (route: Route) => void }) {
-  return <><section className="hero-collage" aria-label="Selected photography"><figure className="hero-left"><img src="/images/portrait-field.jpg" alt="Portrait in a green field" /></figure><figure className="hero-center"><img src="/images/graduate-gown.jpg" alt="Graduation portrait" /></figure><figure className="hero-right"><img src="/images/film-story-2.jpg" alt="Black and white film photograph" /></figure><figure className="hero-detail"><img src="/images/portrait-close.jpg" alt="Close portrait detail" /></figure><figure className="hero-film"><img src="/images/film-story-1.jpg" alt="Film photograph" /></figure><div className="hero-copy"><p className="kicker">Christy Ho — Portrait & graduation photography</p><h1>The art <em>of</em><br />remembering</h1><p className="hero-intro">Honest photographs of people, milestones, and the fleeting moments that make a season yours.</p><TextLink onClick={() => onNavigate("portfolio")}>View selected work</TextLink></div><div className="hero-meta"><span>California</span><span>Selected work · 2024—26</span><span>Scroll ↓</span></div></section>
-  <section className="intro-section"><p className="section-number">01 / The heart of it</p><div><h2>Your story deserves to be remembered <em>as it felt.</em></h2><p className="body-large">The loud laughs, the quiet pauses, and every beautiful in-between. I create warm, artful photographs that let you return to this season again and again.</p><TextLink onClick={() => onNavigate("about")}>Meet Christy</TextLink></div></section>
-  <section className="gallery-section"><div className="center-heading"><p className="kicker">A glimpse into the stories</p><h2>Recent <em>work</em></h2></div><GalleryCards /><TextLink onClick={() => onNavigate("portfolio")}>Explore the portfolio</TextLink></section>
-  <section className="experience-banner"><img src="/images/portrait-walk.jpg" alt="Portrait session in motion" /><div><p className="kicker">More than photographs</p><h2>A relaxed, thoughtful <em>experience</em></h2><p>From our first conversation through your final gallery, I’ll help create a session that feels comfortable, personal, and unmistakably yours.</p><TextLink light onClick={() => onNavigate("services")}>View services</TextLink></div></section>
-  <section className="closing-cta"><p className="script-accent">Let’s make something honest</p><h2>Ready to tell your story?</h2><button className="oval-button" onClick={() => onNavigate("inquire")}>Begin here</button></section></>;
-}
-
-function GalleryCards() { return <div className="gallery-cards">{galleries.map((gallery, index) => <article key={gallery.title} className={`gallery-card card-${index + 1}`}><img src={gallery.image} alt={`${gallery.title} photography`} /><p className="kicker">Collection {String(index + 1).padStart(2, "0")}</p><h3>{gallery.title}</h3><p>{gallery.note}</p></article>)}</div>; }
 
 function Portfolio({ onNavigate }: { onNavigate: (route: Route) => void }) {
   const [filter, setFilter] = useState("All");
@@ -62,6 +47,6 @@ function Inquire() { return <section className="editorial-page inquire-page"><Pa
 
 function PageIntro({ eyebrow, title, text }: { eyebrow: string; title: React.ReactNode; text: string }) { return <header className="page-intro"><p className="kicker">{eyebrow}</p><h1>{title}</h1><p>{text}</p></header>; }
 function TextLink({ children, onClick, light = false }: { children: React.ReactNode; onClick: () => void; light?: boolean }) { return <button className={`text-link${light ? " light" : ""}`} onClick={onClick}><span>{children}</span><b aria-hidden="true">↗</b></button>; }
-function Footer({ onNavigate }: { onNavigate: (route: Route) => void }) { return <footer><div className="footer-brand"><span>Christy Ho</span><small>Photography</small></div><div className="footer-links"><p className="kicker">Navigate</p>{(["home", "portfolio", "about", "services", "inquire"] as Route[]).map((route) => <button key={route} onClick={() => onNavigate(route)}>{route}</button>)}</div><div className="footer-note"><p className="script-accent">Stay close</p><p>Portraits, milestones, and honest stories.</p></div><p className="copyright">© {new Date().getFullYear()} Christy Ho Photography</p></footer>; }
+function Footer({ onNavigate }: { onNavigate: (route: Route) => void }) { return <footer><div className="footer-brand"><span>Christy Ho</span><small>Photography</small></div><div className="footer-links"><p className="kicker">Navigate</p>{(["portfolio", "about", "services", "inquire"] as Route[]).map((route) => <button key={route} onClick={() => onNavigate(route)}>{route}</button>)}</div><div className="footer-note"><p className="script-accent">Stay close</p><p>Portraits, milestones, and honest stories.</p></div><p className="copyright">© {new Date().getFullYear()} Christy Ho Photography</p></footer>; }
 
 export default App;

@@ -7,11 +7,12 @@ function App() {
   const [route, setRoute] = useState<Route>(routeFromPath);
   useEffect(() => { const update = () => setRoute(routeFromPath()); window.addEventListener("popstate", update); return () => window.removeEventListener("popstate", update); }, []);
   const navigate = (next: Route) => { window.history.pushState({}, "", `/${next}`); setRoute(next); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  return <div className="site-shell"><Header route={route} onNavigate={navigate} /><main id="main">{route === "portfolio" && <Portfolio onNavigate={navigate} />}{route === "about" && <About onNavigate={navigate} />}{route === "services" && <Services onNavigate={navigate} />}{route === "inquire" && <Inquire />}</main><Footer onNavigate={navigate} /></div>;
+  const goToHomepage = () => { window.history.pushState({}, "", "/"); setRoute("portfolio"); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  return <div className="site-shell"><Header route={route} onNavigate={navigate} onHome={goToHomepage} /><main id="main">{route === "portfolio" && <Portfolio onNavigate={navigate} />}{route === "about" && <About onNavigate={navigate} />}{route === "services" && <Services onNavigate={navigate} />}{route === "inquire" && <Inquire />}</main><Footer onNavigate={navigate} /></div>;
 }
 
-function Header({ route, onNavigate }: { route: Route; onNavigate: (route: Route) => void }) {
-  return <header className="site-header"><button className="wordmark" onClick={() => onNavigate("portfolio")} aria-label="Christy Ho Photography, portfolio"><span>Christy Ho</span><small>Photography</small></button><nav aria-label="Main navigation">{(["portfolio", "about", "services", "inquire"] as Route[]).map((item) => <button className={route === item ? "active" : ""} key={item} onClick={() => onNavigate(item)}>{item}</button>)}</nav></header>;
+function Header({ route, onNavigate, onHome }: { route: Route; onNavigate: (route: Route) => void; onHome: () => void }) {
+  return <header className="site-header"><button className="wordmark" onClick={onHome} aria-label="Christy Ho Photography, homepage"><span>Christy Ho</span><small>Photography</small></button><nav aria-label="Main navigation">{(["portfolio", "about", "services", "inquire"] as Route[]).map((item) => <button className={route === item ? "active" : ""} key={item} onClick={() => onNavigate(item)}>{item}</button>)}</nav></header>;
 }
 
 function Portfolio({ onNavigate }: { onNavigate: (route: Route) => void }) {

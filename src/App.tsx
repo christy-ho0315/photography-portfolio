@@ -30,8 +30,22 @@ function Home({ onNavigate }: { onNavigate: (route: Route) => void }) {
 function GalleryCards() { return <div className="gallery-cards">{galleries.map((gallery, index) => <article key={gallery.title} className={`gallery-card card-${index + 1}`}><img src={gallery.image} alt={`${gallery.title} photography`} /><p className="kicker">Collection {String(index + 1).padStart(2, "0")}</p><h3>{gallery.title}</h3><p>{gallery.note}</p></article>)}</div>; }
 
 function Portfolio({ onNavigate }: { onNavigate: (route: Route) => void }) {
-  const images = ["graduate-gown.jpg", "portrait-field.jpg", "film-story-1.jpg", "graduate-campus.jpg", "portrait-close.jpg", "film-story-2.jpg", "graduate-detail.jpg", "editorial-1.jpg", "film-story-3.jpg"];
-  return <section className="editorial-page"><PageIntro eyebrow="Selected stories" title={<>The <em>portfolio</em></>} text="A collection of portraits, milestones, and quietly beautiful moments." /><div className="masonry-grid">{images.map((image, index) => <img key={image} className={`tile-${index + 1}`} src={`/images/${image}`} alt="Christy Ho photography portfolio" />)}</div><div className="closing-cta"><p className="script-accent">Your turn</p><h2>Let’s create something personal.</h2><button className="oval-button" onClick={() => onNavigate("inquire")}>Inquire</button></div></section>;
+  const [filter, setFilter] = useState("All");
+  const projects = [
+    { title: "The Last Walk", year: "2026", category: "Graduation", image: "graduate-gown.jpg", shape: "landscape" },
+    { title: "Soft Focus", year: "2025", category: "Film", image: "film-story-2.jpg", shape: "portrait" },
+    { title: "In Her Element", year: "2026", category: "Portraits", image: "portrait-field.jpg", shape: "portrait" },
+    { title: "Campus Light", year: "2026", category: "Graduation", image: "graduate-campus.jpg", shape: "landscape" },
+    { title: "A Quiet Study", year: "2025", category: "Portraits", image: "portrait-close.jpg", shape: "landscape" },
+    { title: "Between Frames", year: "2024", category: "Film", image: "film-story-1.jpg", shape: "portrait" },
+    { title: "Details of a Chapter", year: "2026", category: "Graduation", image: "graduate-detail.jpg", shape: "portrait" },
+    { title: "Editorial No. 01", year: "2025", category: "Portraits", image: "editorial-1.jpg", shape: "landscape" },
+    { title: "After the Sun", year: "2024", category: "Film", image: "film-story-3.jpg", shape: "landscape" },
+    { title: "Forward", year: "2026", category: "Graduation", image: "portrait-walk.jpg", shape: "portrait" },
+  ];
+  const filters = ["All", "Graduation", "Portraits", "Film"];
+  const visible = filter === "All" ? projects : projects.filter((project) => project.category === filter);
+  return <section className="portfolio-index"><header className="portfolio-heading"><div><p className="kicker">Selected work · 2024—26</p><h1>Portfolio</h1></div><p>Portraits, milestones, and personal stories photographed with attention to gesture, place, and the moments in between.</p></header><div className="portfolio-filters" aria-label="Filter portfolio">{filters.map((item) => <button className={filter === item ? "active" : ""} aria-pressed={filter === item} key={item} onClick={() => setFilter(item)}>{item}</button>)}</div><div className="project-grid">{visible.map((project) => <article className={`project-card ${project.shape}`} key={project.title}><div className="project-image"><img src={`/images/${project.image}`} alt={`${project.title} — ${project.category} photography`} /></div><div className="project-caption"><h2>{project.title}</h2><p>{project.category}</p><time>{project.year}</time></div></article>)}</div><div className="portfolio-end"><p>End of selected work</p><button onClick={() => onNavigate("inquire")}>Inquire about a session ↗</button></div></section>;
 }
 
 function About({ onNavigate }: { onNavigate: (route: Route) => void }) { return <section className="editorial-page"><PageIntro eyebrow="Behind the lens" title={<>Hi, I’m <em>Christy.</em></>} text="A photographer drawn to honest expression, thoughtful details, and images with a sense of place." /><div className="about-story"><img src="/images/christy-portrait.jpg" alt="Portrait of photographer Christy Ho" /><div><p className="section-number">A little about me</p><h2>I notice the moments between the <em>moments.</em></h2><p className="body-large">My approach is calm and collaborative. I’ll offer enough direction to help you feel at ease, then leave room for your personality and natural movement to lead.</p><p>Whether we’re celebrating a graduation, making portraits just because, or documenting a new creative chapter, the goal is the same: photographs that feel true to you.</p><TextLink onClick={() => onNavigate("services")}>See the services</TextLink></div></div></section>; }

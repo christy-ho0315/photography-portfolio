@@ -1,114 +1,54 @@
 import { useEffect, useState } from "react";
-import { collections } from "./data/site";
 
-type Route = "home" | "portfolio" | "about" | "services" | "contact";
-
-const routeFromPath = (): Route => {
-  const route = window.location.pathname.split("/").filter(Boolean)[0];
-  return (["portfolio", "about", "services", "contact"] as Route[]).includes(route as Route)
-    ? (route as Route)
-    : "home";
-};
+type Route = "home" | "portfolio" | "about" | "experience" | "inquire";
+const routeFromPath = (): Route => { const value = window.location.pathname.split("/").filter(Boolean)[0]; return (["portfolio", "about", "experience", "inquire"] as Route[]).includes(value as Route) ? value as Route : "home"; };
+const galleries = [
+  { title: "Graduation", note: "The end of one chapter, held onto forever.", image: "/images/graduate-gown.jpg" },
+  { title: "Portraits", note: "Honest portraits with room to feel like yourself.", image: "/images/portrait-field.jpg" },
+  { title: "On film", note: "Soft edges, in-between moments, and a little nostalgia.", image: "/images/film-story-1.jpg" },
+];
 
 function App() {
   const [route, setRoute] = useState<Route>(routeFromPath);
-
-  useEffect(() => {
-    const onPopState = () => setRoute(routeFromPath());
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
-  const navigate = (next: Route) => {
-    const path = next === "home" ? "/" : `/${next}`;
-    window.history.pushState({}, "", path);
-    setRoute(next);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  return (
-    <div className="site-shell">
-      <Header route={route} onNavigate={navigate} />
-      <main id="main">
-        {route === "home" && <Home onNavigate={navigate} />}
-        {route === "portfolio" && <Portfolio />}
-        {route === "about" && <About />}
-        {route === "services" && <Services onNavigate={navigate} />}
-        {route === "contact" && <Contact />}
-      </main>
-      <Footer onNavigate={navigate} />
-    </div>
-  );
+  useEffect(() => { const update = () => setRoute(routeFromPath()); window.addEventListener("popstate", update); return () => window.removeEventListener("popstate", update); }, []);
+  const navigate = (next: Route) => { window.history.pushState({}, "", next === "home" ? "/" : `/${next}`); setRoute(next); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  return <div className="site-shell"><Header route={route} onNavigate={navigate} /><main id="main">{route === "home" && <Home onNavigate={navigate} />}{route === "portfolio" && <Portfolio onNavigate={navigate} />}{route === "about" && <About onNavigate={navigate} />}{route === "experience" && <Experience onNavigate={navigate} />}{route === "inquire" && <Inquire />}</main><Footer onNavigate={navigate} /></div>;
 }
 
 function Header({ route, onNavigate }: { route: Route; onNavigate: (route: Route) => void }) {
-  return (
-    <header className="site-header">
-      <button className="wordmark" onClick={() => onNavigate("home")}>Photography Studio</button>
-      <nav aria-label="Main navigation">
-        {(["portfolio", "about", "services", "contact"] as Route[]).map((item) => (
-          <button className={route === item ? "active" : ""} key={item} onClick={() => onNavigate(item)}>
-            {item}
-          </button>
-        ))}
-      </nav>
-    </header>
-  );
+  const [open, setOpen] = useState(false); const go = (next: Route) => { setOpen(false); onNavigate(next); };
+  return <header className="site-header"><button className="script-link" onClick={() => go("inquire")}>Inquire</button><button className="wordmark" onClick={() => go("home")} aria-label="Christy Ho Photography, home"><span>Christy Ho</span><small>Photography</small></button><button className="script-link menu-trigger" aria-expanded={open} onClick={() => setOpen(!open)}>Explore</button><nav className={open ? "is-open" : ""} aria-label="Main navigation">{(["home", "portfolio", "about", "experience", "inquire"] as Route[]).map((item) => <button className={route === item ? "active" : ""} key={item} onClick={() => go(item)}>{item}</button>)}</nav></header>;
 }
 
 function Home({ onNavigate }: { onNavigate: (route: Route) => void }) {
-  return (
-    <>
-      <section className="hero">
-        <p className="eyebrow">Independent photographer · Location to be added</p>
-        <h1>Photographs that feel lived in.</h1>
-        <p className="lede">A flexible starting point for the final brand story, photography specialty, and signature imagery.</p>
-        <div className="actions">
-          <button className="primary" onClick={() => onNavigate("portfolio")}>View portfolio</button>
-          <button onClick={() => onNavigate("contact")}>Plan a session</button>
-        </div>
-        <div className="image-placeholder hero-image" role="img" aria-label="Hero photograph placeholder">Hero photograph</div>
-      </section>
-      <section className="section">
-        <div className="section-heading">
-          <p className="eyebrow">Selected work</p>
-          <h2>Photography collections</h2>
-        </div>
-        <CollectionGrid />
-      </section>
-    </>
-  );
+  return <><section className="hero-collage" aria-label="Selected photography"><figure className="hero-left"><img src="/images/portrait-field.jpg" alt="Portrait in a green field" /></figure><figure className="hero-center"><img src="/images/graduate-gown.jpg" alt="Graduation portrait" /></figure><figure className="hero-right"><img src="/images/film-story-2.jpg" alt="Black and white film photograph" /></figure><div className="hero-copy"><p className="kicker">Portrait & graduation photographer</p><h1>Images that feel<br /><em>like you.</em></h1></div></section>
+  <section className="intro-section"><p className="section-number">01 / The heart of it</p><div><h2>Your story deserves to be remembered <em>as it felt.</em></h2><p className="body-large">The loud laughs, the quiet pauses, and every beautiful in-between. I create warm, artful photographs that let you return to this season again and again.</p><TextLink onClick={() => onNavigate("about")}>Meet Christy</TextLink></div></section>
+  <section className="gallery-section"><div className="center-heading"><p className="kicker">A glimpse into the stories</p><h2>Recent <em>work</em></h2></div><GalleryCards /><TextLink onClick={() => onNavigate("portfolio")}>Explore the portfolio</TextLink></section>
+  <section className="experience-banner"><img src="/images/portrait-walk.jpg" alt="Portrait session in motion" /><div><p className="kicker">More than photographs</p><h2>A relaxed, thoughtful <em>experience</em></h2><p>From our first conversation through your final gallery, I’ll help create a session that feels comfortable, personal, and unmistakably yours.</p><TextLink light onClick={() => onNavigate("experience")}>The experience</TextLink></div></section>
+  <section className="closing-cta"><p className="script-accent">Let’s make something honest</p><h2>Ready to tell your story?</h2><button className="oval-button" onClick={() => onNavigate("inquire")}>Begin here</button></section></>;
 }
 
-function CollectionGrid() {
-  return <div className="collection-grid">{collections.map((collection, index) => (
-    <article className="collection-card" key={collection.slug}>
-      <div className={`image-placeholder image-${index + 1}`} role="img" aria-label={`${collection.title} photograph placeholder`}>Add photograph</div>
-      <p className="eyebrow">Collection {String(index + 1).padStart(2, "0")}</p>
-      <h3>{collection.title}</h3>
-      <p>{collection.description}</p>
-    </article>
-  ))}</div>;
+function GalleryCards() { return <div className="gallery-cards">{galleries.map((gallery, index) => <article key={gallery.title} className={`gallery-card card-${index + 1}`}><img src={gallery.image} alt={`${gallery.title} photography`} /><p className="kicker">Collection {String(index + 1).padStart(2, "0")}</p><h3>{gallery.title}</h3><p>{gallery.note}</p></article>)}</div>; }
+
+function Portfolio({ onNavigate }: { onNavigate: (route: Route) => void }) {
+  const images = ["graduate-gown.jpg", "portrait-field.jpg", "film-story-1.jpg", "graduate-campus.jpg", "portrait-close.jpg", "film-story-2.jpg", "graduate-detail.jpg", "editorial-1.jpg", "film-story-3.jpg"];
+  return <section className="editorial-page"><PageIntro eyebrow="Selected stories" title={<>The <em>portfolio</em></>} text="A collection of portraits, milestones, and quietly beautiful moments." /><div className="masonry-grid">{images.map((image, index) => <img key={image} className={`tile-${index + 1}`} src={`/images/${image}`} alt="Christy Ho photography portfolio" />)}</div><div className="closing-cta"><p className="script-accent">Your turn</p><h2>Let’s create something personal.</h2><button className="oval-button" onClick={() => onNavigate("inquire")}>Inquire</button></div></section>;
 }
 
-function Portfolio() {
-  return <section className="page"><p className="eyebrow">Portfolio</p><h1>Selected stories</h1><p className="lede">This page is ready for real galleries, project titles, and image sequences.</p><CollectionGrid /></section>;
+function About({ onNavigate }: { onNavigate: (route: Route) => void }) { return <section className="editorial-page"><PageIntro eyebrow="Behind the lens" title={<>Hi, I’m <em>Christy.</em></>} text="A photographer drawn to honest expression, thoughtful details, and images with a sense of place." /><div className="about-story"><img src="/images/christy-portrait.jpg" alt="Portrait of photographer Christy Ho" /><div><p className="section-number">A little about me</p><h2>I notice the moments between the <em>moments.</em></h2><p className="body-large">My approach is calm and collaborative. I’ll offer enough direction to help you feel at ease, then leave room for your personality and natural movement to lead.</p><p>Whether we’re celebrating a graduation, making portraits just because, or documenting a new creative chapter, the goal is the same: photographs that feel true to you.</p><TextLink onClick={() => onNavigate("experience")}>See what it’s like</TextLink></div></div></section>; }
+
+function Experience({ onNavigate }: { onNavigate: (route: Route) => void }) {
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const faqs = [["What kinds of sessions do you photograph?", "Christy Ho Photography currently focuses on graduation, individual portraits, creative editorials, and personal storytelling sessions."], ["What happens after I inquire?", "We’ll talk through your vision, timing, location, and what you want the images to feel like before shaping the session together."], ["I feel awkward in front of the camera—can you help?", "Absolutely. You’ll receive gentle direction and simple prompts, with plenty of space to move, breathe, and settle into the experience."], ["When will I receive my photographs?", "Your exact delivery timing will be confirmed in your proposal and agreement before booking."]];
+  return <section className="editorial-page"><PageIntro eyebrow="The experience" title={<>Photography is an investment in <em>remembering.</em></>} text="A personal, easygoing process designed around your story—not a one-size-fits-all formula." /><div className="offer-grid"><article><img src="/images/graduate-campus.jpg" alt="Graduation photography session" /><span>01</span><h2>Graduation</h2><p>Celebrate the work, the place, and the people who shaped this chapter. Sessions can include campus landmarks, cap and gown portraits, and the small details you’ll want to remember.</p></article><article><img src="/images/portrait-close.jpg" alt="Individual portrait session" /><span>02</span><h2>Portraits</h2><p>For personal milestones, creative profiles, or simply marking who you are right now. We’ll build a session around your personality, location, and visual ideas.</p></article><article><img src="/images/film-story-3.jpg" alt="Creative film photography" /><span>03</span><h2>Creative stories</h2><p>A more exploratory session for artists, makers, and anyone with a concept that deserves room to unfold through digital and film-inspired imagery.</p></article></div>
+  <section className="process-section"><p className="kicker">Simple from start to finish</p><h2>The booking <em>process</em></h2><div className="process-grid"><article><span>01</span><h3>Say hello</h3><p>Tell me about your idea, preferred date, and what matters most to you.</p></article><article><span>02</span><h3>Shape the session</h3><p>We’ll choose the setting, timing, styling, and details together.</p></article><article><span>03</span><h3>Make the memories</h3><p>Show up as you are. I’ll guide the experience and photograph the rest.</p></article></div><button className="oval-button" onClick={() => onNavigate("inquire")}>Work with me</button></section>
+  <section className="faq-section"><p className="kicker">Good to know</p><h2>Common <em>questions</em></h2><div className="faq-list">{faqs.map(([question, answer], index) => <article key={question}><button aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)}><span>{question}</span><b>{openFaq === index ? "−" : "+"}</b></button>{openFaq === index && <p>{answer}</p>}</article>)}</div></section></section>;
 }
 
-function About() {
-  return <section className="page split"><div><p className="eyebrow">About</p><h1>The person behind the camera</h1><p className="lede">Add a personal introduction, approach, location, and the kinds of moments you care about photographing.</p></div><div className="image-placeholder portrait" role="img" aria-label="Photographer portrait placeholder">Photographer portrait</div></section>;
-}
+function Inquire() { return <section className="editorial-page inquire-page"><PageIntro eyebrow="Let’s connect" title={<>Tell me what you’re <em>dreaming up.</em></>} text="Share as much as you can below. This form is currently a design preview and will be connected before launch." /><form onSubmit={(event) => event.preventDefault()}><label>Your name<input name="name" autoComplete="name" /></label><label>Email address<input name="email" type="email" autoComplete="email" /></label><label>Session type<select name="session"><option>Graduation</option><option>Portrait</option><option>Creative story</option><option>Something else</option></select></label><label>Preferred date<input name="date" type="date" /></label><label className="full">Tell me about your vision<textarea name="message" rows={6} /></label><button className="oval-button" type="submit">Send inquiry</button></form></section>; }
 
-function Services({ onNavigate }: { onNavigate: (route: Route) => void }) {
-  return <section className="page"><p className="eyebrow">Services</p><h1>A clear path from inquiry to gallery</h1><div className="steps"><article><span>01</span><h3>Connect</h3><p>Share your idea, date, location, and what you want the images to feel like.</p></article><article><span>02</span><h3>Plan</h3><p>Shape the session, timeline, styling, and deliverables together.</p></article><article><span>03</span><h3>Create</h3><p>Photograph the story and deliver a thoughtfully edited gallery.</p></article></div><button className="primary" onClick={() => onNavigate("contact")}>Start an inquiry</button></section>;
-}
-
-function Contact() {
-  return <section className="page contact-page"><div><p className="eyebrow">Contact</p><h1>Tell me what you’re imagining.</h1><p className="lede">The final form can connect to email, Formspree, or another service before launch.</p></div><form onSubmit={(event) => event.preventDefault()}><label>Name<input name="name" autoComplete="name" /></label><label>Email<input name="email" type="email" autoComplete="email" /></label><label>What are you planning?<textarea name="message" rows={6} /></label><button className="primary" type="submit">Send inquiry</button></form></section>;
-}
-
-function Footer({ onNavigate }: { onNavigate: (route: Route) => void }) {
-  return <footer><p>Photography Studio</p><button onClick={() => onNavigate("contact")}>Bookings & inquiries</button><p>© {new Date().getFullYear()}</p></footer>;
-}
+function PageIntro({ eyebrow, title, text }: { eyebrow: string; title: React.ReactNode; text: string }) { return <header className="page-intro"><p className="kicker">{eyebrow}</p><h1>{title}</h1><p>{text}</p></header>; }
+function TextLink({ children, onClick, light = false }: { children: React.ReactNode; onClick: () => void; light?: boolean }) { return <button className={`text-link${light ? " light" : ""}`} onClick={onClick}><span>{children}</span><b aria-hidden="true">↗</b></button>; }
+function Footer({ onNavigate }: { onNavigate: (route: Route) => void }) { return <footer><div className="footer-brand"><span>Christy Ho</span><small>Photography</small></div><div className="footer-links"><p className="kicker">Navigate</p>{(["portfolio", "about", "experience", "inquire"] as Route[]).map((route) => <button key={route} onClick={() => onNavigate(route)}>{route}</button>)}</div><div className="footer-note"><p className="script-accent">Stay close</p><p>Portraits, milestones, and honest stories.</p></div><p className="copyright">© {new Date().getFullYear()} Christy Ho Photography</p></footer>; }
 
 export default App;

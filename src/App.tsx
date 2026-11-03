@@ -32,21 +32,24 @@ function GalleryCards() { return <div className="gallery-cards">{galleries.map((
 
 function Portfolio({ onNavigate }: { onNavigate: (route: Route) => void }) {
   const [filter, setFilter] = useState("All");
-  const projects = [
-    { title: "The Last Walk", year: "2026", category: "Graduation", image: "graduate-gown.jpg", shape: "landscape" },
-    { title: "Soft Focus", year: "2025", category: "Film", image: "film-story-2.jpg", shape: "portrait" },
-    { title: "In Her Element", year: "2026", category: "Portraits", image: "portrait-field.jpg", shape: "portrait" },
-    { title: "Campus Light", year: "2026", category: "Graduation", image: "graduate-campus.jpg", shape: "landscape" },
-    { title: "A Quiet Study", year: "2025", category: "Portraits", image: "portrait-close.jpg", shape: "landscape" },
-    { title: "Between Frames", year: "2024", category: "Film", image: "film-story-1.jpg", shape: "portrait" },
-    { title: "Details of a Chapter", year: "2026", category: "Graduation", image: "graduate-detail.jpg", shape: "portrait" },
-    { title: "Editorial No. 01", year: "2025", category: "Portraits", image: "editorial-1.jpg", shape: "landscape" },
-    { title: "After the Sun", year: "2024", category: "Film", image: "film-story-3.jpg", shape: "landscape" },
-    { title: "Forward", year: "2026", category: "Graduation", image: "portrait-walk.jpg", shape: "portrait" },
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
+  const sessions = [
+    { slug: "sam-graduation", title: "Sam Graduation", category: "Digital", count: 11, note: "A graduation story filled with campus light and movement." },
+    { slug: "fufu-graduation", title: "FUFU Graduation", category: "Digital", count: 8, note: "A celebratory graduation session with warm, natural portraits." },
+    { slug: "noelle", title: "Noelle", category: "Digital", count: 7, note: "An expressive portrait session shaped by place and personality." },
+    { slug: "self-portraits", title: "Self-Portraits", category: "Digital", count: 7, note: "Personal studies in gesture, light, and self-observation." },
+    { slug: "bw-photobooth", title: "B&W Photobooth", category: "Film", count: 7, note: "A playful black-and-white sequence made one frame at a time." },
+    { slug: "film-with-people", title: "Film — With People", category: "Film", count: 4, note: "Candid color film photographs of people and shared moments." },
+    { slug: "film-without-people", title: "Film — Without People", category: "Film", count: 4, note: "Quiet observations of light, landscape, and everyday details." },
   ];
-  const filters = ["All", "Graduation", "Portraits", "Film"];
-  const visible = filter === "All" ? projects : projects.filter((project) => project.category === filter);
-  return <section className="portfolio-index"><header className="portfolio-heading"><div><p className="kicker">Selected work · 2024—26</p><h1>Portfolio</h1></div><p>Portraits, milestones, and personal stories photographed with attention to gesture, place, and the moments in between.</p></header><div className="portfolio-filters" aria-label="Filter portfolio">{filters.map((item) => <button className={filter === item ? "active" : ""} aria-pressed={filter === item} key={item} onClick={() => setFilter(item)}>{item}</button>)}</div><div className="project-grid">{visible.map((project) => <article className={`project-card ${project.shape}`} key={project.title}><div className="project-image"><img src={`/images/${project.image}`} alt={`${project.title} — ${project.category} photography`} /></div><div className="project-caption"><h2>{project.title}</h2><p>{project.category}</p><time>{project.year}</time></div></article>)}</div><div className="portfolio-end"><p>End of selected work</p><button onClick={() => onNavigate("inquire")}>Inquire about a session ↗</button></div></section>;
+  const filters = ["All", "Digital", "Film"];
+  const visible = filter === "All" ? sessions : sessions.filter((session) => session.category === filter);
+  const active = sessions.find((session) => session.slug === selectedSession);
+  if (active) {
+    const images = Array.from({ length: active.count }, (_, index) => `/sessions/${active.slug}/${String(index + 1).padStart(2, "0")}.jpg`);
+    return <section className="session-page"><button className="session-back" onClick={() => setSelectedSession(null)}>← All sessions</button><header className="session-header"><div><p className="kicker">{active.category} session · {active.count} photographs</p><h1>{active.title}</h1></div><p>{active.note}</p></header><div className="session-gallery">{images.map((image, index) => <figure key={image}><img src={image} alt={`${active.title}, photograph ${index + 1}`} loading={index > 3 ? "lazy" : "eager"} /><figcaption>{String(index + 1).padStart(2, "0")} / {String(active.count).padStart(2, "0")}</figcaption></figure>)}</div><div className="portfolio-end"><button onClick={() => setSelectedSession(null)}>← Return to sessions</button><button onClick={() => onNavigate("inquire")}>Inquire about a session ↗</button></div></section>;
+  }
+  return <section className="portfolio-index"><header className="portfolio-heading"><div><p className="kicker">Photography archive</p><h1>Sessions</h1></div><p>Each collection is one complete session. Open a story to view the photographs together in a multi-column sequence.</p></header><div className="portfolio-filters" aria-label="Filter sessions">{filters.map((item) => <button className={filter === item ? "active" : ""} aria-pressed={filter === item} key={item} onClick={() => setFilter(item)}>{item}</button>)}</div><div className="session-index">{visible.map((session, index) => <button className="session-card" key={session.slug} onClick={() => { setSelectedSession(session.slug); window.scrollTo({ top: 0, behavior: "smooth" }); }}><div className="session-cover"><img src={`/sessions/${session.slug}/01.jpg`} alt={`${session.title} session cover`} /></div><div className="session-card-copy"><span>{String(index + 1).padStart(2, "0")}</span><h2>{session.title}</h2><p>{session.category} · {session.count} photographs</p></div></button>)}</div><div className="portfolio-end"><p>{sessions.length} complete sessions</p><button onClick={() => onNavigate("inquire")}>Inquire about a session ↗</button></div></section>;
 }
 
 function About({ onNavigate }: { onNavigate: (route: Route) => void }) { return <section className="editorial-page tactile-page"><img className="decor decor-flowers-about" src="/decor/pressed-wildflowers.png" alt="" aria-hidden="true" /><PageIntro eyebrow="Behind the lens" title={<>Hi, I’m <em>Christy.</em></>} text="A photographer drawn to honest expression, thoughtful details, and images with a sense of place." /><div className="about-story"><img src="/images/christy-portrait.jpg" alt="Portrait of photographer Christy Ho" /><div><p className="section-number">A little about me</p><h2>I notice the moments between the <em>moments.</em></h2><p className="body-large">My approach is calm and collaborative. I’ll offer enough direction to help you feel at ease, then leave room for your personality and natural movement to lead.</p><p>Whether we’re celebrating a graduation, making portraits just because, or documenting a new creative chapter, the goal is the same: photographs that feel true to you.</p><TextLink onClick={() => onNavigate("services")}>See the services</TextLink></div></div></section>; }

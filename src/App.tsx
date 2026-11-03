@@ -11,7 +11,22 @@ const galleries = [
 function App() {
   const [route, setRoute] = useState<Route>(routeFromPath);
   useEffect(() => { const update = () => setRoute(routeFromPath()); window.addEventListener("popstate", update); return () => window.removeEventListener("popstate", update); }, []);
-  const navigate = (next: Route) => { window.history.pushState({}, "", next === "home" ? "/" : `/${next}`); setRoute(next); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  useEffect(() => {
+    let observer: IntersectionObserver | undefined;
+    const frame = requestAnimationFrame(() => {
+      const targets = document.querySelectorAll("main section, .gallery-card, .session-card, .offer-grid article, .process-grid article, .faq-list article");
+      targets.forEach((target) => target.classList.add("reveal-item"));
+      observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          observer?.unobserve(entry.target);
+        }
+      }), { threshold: .08, rootMargin: "0px 0px -5%" });
+      targets.forEach((target) => observer?.observe(target));
+    });
+    return () => { cancelAnimationFrame(frame); observer?.disconnect(); };
+  }, [route]);
+  const navigate = (next: Route) => { window.history.pushState({}, "", next === "home" ? "/" : `/${next}`); setRoute(next); window.scrollTo({ top: 0, behavior: "auto" }); };
   const goToHomepage = () => navigate("home");
   return <div className="site-shell"><Header route={route} onNavigate={navigate} onHome={goToHomepage} /><main id="main">{route === "home" && <Home onNavigate={navigate} />}{route === "portfolio" && <Portfolio onNavigate={navigate} />}{route === "about" && <About onNavigate={navigate} />}{route === "services" && <Services onNavigate={navigate} />}{route === "inquire" && <Inquire />}</main><Footer onNavigate={navigate} /></div>;
 }

@@ -47,11 +47,6 @@ function Portfolio({ onNavigate }: { onNavigate: (route: Route) => void }) {
   const [filter, setFilter] = useState("All");
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [lightbox, setLightbox] = useState<string | null>(null);
-  useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setLightbox(null); };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, []);
   const sessions = [
     { slug: "sam-graduation", title: "Sam Graduation", category: "Digital", count: 11, note: "A graduation story filled with campus light and movement." },
     { slug: "fufu-graduation", title: "FUFU Graduation", category: "Digital", count: 8, note: "A celebratory graduation session with warm, natural portraits." },
@@ -64,9 +59,23 @@ function Portfolio({ onNavigate }: { onNavigate: (route: Route) => void }) {
   const filters = ["All", "Digital", "Film"];
   const visible = filter === "All" ? sessions : sessions.filter((session) => session.category === filter);
   const active = sessions.find((session) => session.slug === selectedSession);
+  const images = active ? Array.from({ length: active.count }, (_, index) => `/sessions/${active.slug}/${String(index + 1).padStart(2, "0")}.jpg`) : [];
+  const showAdjacent = (direction: number) => setLightbox((current) => {
+    if (!current || !images.length) return current;
+    const currentIndex = images.indexOf(current);
+    return images[(currentIndex + direction + images.length) % images.length];
+  });
+  useEffect(() => {
+    const navigateLightbox = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLightbox(null);
+      if (lightbox && event.key === "ArrowLeft") showAdjacent(-1);
+      if (lightbox && event.key === "ArrowRight") showAdjacent(1);
+    };
+    window.addEventListener("keydown", navigateLightbox);
+    return () => window.removeEventListener("keydown", navigateLightbox);
+  }, [lightbox, selectedSession]);
   if (active) {
-    const images = Array.from({ length: active.count }, (_, index) => `/sessions/${active.slug}/${String(index + 1).padStart(2, "0")}.jpg`);
-    return <section className="session-page"><button className="session-back" onClick={() => setSelectedSession(null)}>← All sessions</button><header className="session-header"><div><p className="kicker">{active.category} session · {active.count} photographs</p><h1>{active.title}</h1></div><p>{active.note}</p></header><div className="session-gallery">{images.map((image, index) => <button className="session-photo" key={image} onClick={() => setLightbox(image)} aria-label={`Enlarge ${active.title} photograph ${index + 1}`}><img src={image} alt={`${active.title}, photograph ${index + 1}`} loading={index > 5 ? "lazy" : "eager"} onLoad={arrangeSessionPhoto} /></button>)}</div><div className="portfolio-end"><button onClick={() => setSelectedSession(null)}>← Return to sessions</button><button onClick={() => onNavigate("inquire")}>Inquire about a session ↗</button></div>{lightbox && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged photograph" onClick={() => setLightbox(null)}><button className="lightbox-close" onClick={() => setLightbox(null)} aria-label="Close enlarged photograph">Close ×</button><img src={lightbox} alt={`${active.title}, enlarged view`} onClick={(event) => event.stopPropagation()} /></div>}</section>;
+    return <section className="session-page"><button className="session-back" onClick={() => setSelectedSession(null)}>← All sessions</button><header className="session-header"><div><p className="kicker">{active.category} session · {active.count} photographs</p><h1>{active.title}</h1></div><p>{active.note}</p></header><div className="session-gallery">{images.map((image, index) => <button className="session-photo" key={image} onClick={() => setLightbox(image)} aria-label={`Enlarge ${active.title} photograph ${index + 1}`}><img src={image} alt={`${active.title}, photograph ${index + 1}`} loading={index > 5 ? "lazy" : "eager"} onLoad={arrangeSessionPhoto} /></button>)}</div><div className="portfolio-end"><button onClick={() => setSelectedSession(null)}>← Return to sessions</button><button onClick={() => onNavigate("inquire")}>Inquire about a session ↗</button></div>{lightbox && <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label="Enlarged photograph" onClick={() => setLightbox(null)}><button className="lightbox-close" onClick={() => setLightbox(null)} aria-label="Close enlarged photograph">Close ×</button><button className="lightbox-nav lightbox-prev" onClick={(event) => { event.stopPropagation(); showAdjacent(-1); }} aria-label="Previous photograph">← <span>Back</span></button><img src={lightbox} alt={`${active.title}, enlarged view`} onClick={(event) => event.stopPropagation()} /><button className="lightbox-nav lightbox-next" onClick={(event) => { event.stopPropagation(); showAdjacent(1); }} aria-label="Next photograph"><span>Next</span> →</button></div>}</section>;
   }
   return <section className="portfolio-index"><header className="portfolio-heading"><div><p className="kicker">Photography archive</p><h1>Sessions</h1></div><p>Each collection is one complete session. Open a story to view the photographs together in a multi-column sequence.</p></header><div className="portfolio-filters" aria-label="Filter sessions">{filters.map((item) => <button className={filter === item ? "active" : ""} aria-pressed={filter === item} key={item} onClick={() => setFilter(item)}>{item}</button>)}</div><div className="session-index">{visible.map((session, index) => <button className="session-card" key={session.slug} onClick={() => { setSelectedSession(session.slug); window.scrollTo({ top: 0, behavior: "smooth" }); }}><div className="session-cover"><img src={`/sessions/${session.slug}/01.jpg`} alt={`${session.title} session cover`} /></div><div className="session-card-copy"><span>{String(index + 1).padStart(2, "0")}</span><h2>{session.title}</h2><p>{session.category} · {session.count} photographs</p></div></button>)}</div><div className="portfolio-end"><p>{sessions.length} complete sessions</p><button onClick={() => onNavigate("inquire")}>Inquire about a session ↗</button></div></section>;
 }

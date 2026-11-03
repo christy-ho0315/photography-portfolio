@@ -29,7 +29,7 @@ em{font-family:"Cormorant Garamond",serif;font-style:italic;color:inherit}
 .site-header{grid-template-columns:auto 1fr;min-height:96px;padding:1.5rem 4vw;border-bottom:0;background:var(--paper)}
 .wordmark span{font-family:"Manrope",sans-serif;font-size:1rem;font-weight:500;letter-spacing:.2em}
 .wordmark small{display:none}
-.site-header nav{justify-self:start;margin-left:3rem;gap:1.7rem}
+.site-header nav{justify-self:end;margin-left:0;gap:1.7rem}
 .site-header nav button{font-family:"Cormorant Garamond",serif;font-size:1.05rem;letter-spacing:0;text-transform:none;opacity:1}
 .site-header nav button.active{border-bottom:1px solid currentColor}
 .hero-collage{height:150vh;min-height:1120px;background:var(--paper)}
@@ -76,3 +76,5 @@ em{font-family:"Cormorant Garamond",serif;font-style:italic;color:inherit}
 footer{padding:8rem 4vw 2rem;background:#24231e}
 
 @media(max-width:900px){.site-header{grid-template-columns:1fr}.site-header nav{margin:1rem 0 0;justify-self:stretch;justify-content:space-between}.hero-collage{height:125vh;min-height:900px}.hero-copy{left:5vw;top:3rem;width:90vw}.hero-copy h1{font-size:clamp(3.3rem,10vw,5.8rem)}.hero-left{left:42vw;top:55vh;width:53vw;height:47vh}.hero-center{left:5vw;top:82vh;width:31vw;height:31vh}.hero-right{right:5vw;top:105vh;width:26vw;height:20vh}.hero-detail{display:none}.decor-lace-hero{top:40vh;width:25vw}.intro-section{grid-template-columns:1fr;gap:3rem}.gallery-cards,.project-grid,.about-story,.offer-grid{grid-template-columns:1fr}.gallery-card:nth-child(2),.gallery-card:nth-child(3),.project-card:nth-child(even),.offer-grid article:nth-child(2),.offer-grid article:nth-child(3){margin-top:0}.project-image,.project-card.landscape .project-image{aspect-ratio:4/5}.portfolio-heading{grid-template-columns:1fr;gap:2rem}.inquire-page form{margin:0 4vw;padding:2rem}.decor-flowers-inquire{width:32vw;opacity:.3}}
+@media(max-width:1100px){.site-header{grid-template-columns:auto 1fr}.site-header nav{grid-column:2;grid-row:1;justify-self:end;justify-content:flex-end;margin:0}}
+@media(max-width:620px){.site-header{padding:1.25rem 4vw}.wordmark span{font-size:.78rem}.site-header nav{gap:clamp(.55rem,3vw,1rem)}.site-header nav button{font-size:.82rem}}

@@ -84,13 +84,12 @@ footer{padding:8rem 4vw 2rem;background:#24231e}
 @media(max-width:520px){.session-index{grid-template-columns:1fr;gap:4rem}.session-card:nth-child(even){margin-top:0}.session-page{padding:3rem 3vw 7rem}.session-header{margin-bottom:4rem}.session-gallery{gap:2rem 2vw}.session-gallery figure:nth-child(even){margin-top:2.5rem}.session-gallery figcaption{font-size:.52rem}}
 
 /* Popup Gallery-inspired session wall */
-.session-gallery{display:block;columns:4;column-gap:10px}
-.session-photo{display:block;width:100%;margin:0 0 10px;padding:0;overflow:hidden;break-inside:avoid;border:0;border-radius:10px;background:#ded8cd;cursor:zoom-in}
+.session-gallery{display:block;columns:2;column-gap:14px}
+.session-photo{display:block;width:100%;margin:0 0 14px;padding:0;overflow:hidden;break-inside:avoid;border:0;border-radius:0;background:#ded8cd;cursor:zoom-in}
 .session-photo img{display:block;width:100%;height:auto;max-height:none;object-fit:contain;transition:transform .35s ease}
 .session-photo:hover img{transform:scale(1.015)}
 .photo-lightbox{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:5vw;background:rgba(20,19,16,.92);backdrop-filter:blur(8px);cursor:zoom-out}
-.photo-lightbox img{display:block;width:auto;max-width:90vw;height:auto;max-height:86vh;object-fit:contain;border-radius:10px;cursor:default}
+.photo-lightbox img{display:block;width:auto;max-width:94vw;height:auto;max-height:90vh;object-fit:contain;border-radius:0;cursor:default}
 .lightbox-close{position:absolute;top:1.5rem;right:1.5rem;padding:.65rem .9rem;border:1px solid rgba(255,255,255,.55);border-radius:999px;background:rgba(20,19,16,.35);color:#fff;font:inherit;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 .lightbox-close:hover{background:#fff;color:#24231e}
-@media(max-width:1000px){.session-gallery{columns:3}}
-@media(max-width:700px){.session-gallery{columns:2;column-gap:8px}.session-photo{margin-bottom:8px;border-radius:7px}.photo-lightbox{padding:4vw}.photo-lightbox img{max-width:92vw;max-height:82vh;border-radius:7px}.lightbox-close{top:1rem;right:1rem}}
+@media(max-width:700px){.session-gallery{columns:1}.session-photo{margin-bottom:12px}.photo-lightbox{padding:3vw}.photo-lightbox img{max-width:94vw;max-height:86vh}.lightbox-close{top:1rem;right:1rem}}
